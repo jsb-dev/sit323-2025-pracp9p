@@ -1,0 +1,25 @@
+# Docker composition for the calculator microservice
+services:
+
+# This is the calculator microservice,
+# More can be added as the application scales
+  calculator:
+  # Build the image from the image registry
+    image: jsbdevdocker/calculator_microservice:latest
+    # Expose the service port
+    ports:
+      - "3000:3000"
+    # Restart policy, will only restart if the app stops/fails
+    restart: unless-stopped
+    # Env variable for the runtime, provides production environment optimisations,
+    # can be used to set up different configurations for dev and prod in Node.JS, 
+    # for this case we're assuming a production release
+    environment:
+      - NODE_ENV=production
+    # Define the working directory of the app
+    working_dir: /calculator_microservice
+    # Mount the app working directory to the local service directory
+    volumes:
+      - ./calculator_microservice:/calculator_microservice
+    # Set the run command for the container
+    command: ["node", "index.js"]
