@@ -1,29 +1,27 @@
-# This file contains the Kubernetes deployment configuration for the calculator microservice.
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: calculator-deployment
-  # Determine the specs, including the number of replicas and the label identifier for the deployment
 spec:
   replicas: 1
   selector:
     matchLabels:
       app: calculator
-      # The template determines the pod configuration
   template:
     metadata:
       labels:
         app: calculator
-        # The pod spec defines the container configuration
     spec:
       containers:
-        - name: 
-        # Pull the image from the image registry
-          image: jsbdevdocker/calculator_microservice:latest
-          # Register the container port
-          ports:
-            - containerPort: 3000
-          # Define the environment variable for Node's production build optimisations
-          env:
-            - name: NODE_ENV
-              value: "production"
+      - name: calculator
+        image: jsbdevdocker/calculator_microservice:latest
+        ports:
+        - containerPort: 3000
+        env:
+        - name: NODE_ENV
+          value: "production"
+        - name: MONGO_URI
+          value: "mongodb://$(MONGO_USERNAME):$(MONGO_PASSWORD)@mongo-service:27017"
+        envFrom:
+        - secretRef:
+            name: mongo-secret
