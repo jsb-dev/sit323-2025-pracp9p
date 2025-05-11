@@ -1,61 +1,81 @@
-# sit323-2025-prac6p
+# sit323-2025-prac9p
+
+This is my submission for a calculator microservice configured with persistent storage and container orchestration. It consists of a Node.js server, containerised, and orchestrated with Docker and K8s. 
 
 ## My Approach
 
-Extending the previous calculator microservice, I'll be configuring a basic kubernetes deployment using the docker image I created. The first step involves preparing the necessary files, deployment.yaml and service.yaml.
+This task presented significant challenges in my development environment due to unclosed instances of previous submissions eating up the CURL requests I made. This lead to confusing symptoms which were stressful to troubleshoot, but once I caught on I was able to enforce a more structured approach to the deployment.
 
-## `deployment.yaml`
+Building off of the last submission, this task required additional configuration to enable database transactions with a standalone instance of MongoDB. Persistent storage had to be configured and a basic backup CronJob was included to backup the database volume.
 
-This file is required for determining how the app (microservice) is deployed in the kubernetes cluster. This requires defining the port that the service listens on and binding the container image to the service pod. Further, the number of pods used for the cluster needs to be clarified.
+Configuring the database connection proved the most difficult due to the multiple references to the database secrets requiring consisting reading-in across the stack. Once I reconciled the secret values to be searched consistently, I was able to focus more on orchestrating and interacting with the deployment. To ensure that no previous pods or deployments were affecting my new deployment, I constructed a comprehensive steplist to purge the previous nodes and apply the new deployment configuration. I also rebuilt the docker image to account for any adjustments to the server file. The steps were as follows:
 
-Now that the file is prepared, I need to apply the deployment strategy to the kubernetes cluster in the CLI.
+### Before Deploying
 
-## `service.yaml`
+1) kubectl delete pv --all
 
-Now that the cluster deployment strategy has been set, I need to facilitate communication between the pods and external network. This will require a port for the service to listen on, the port for the container image that the microservice is listening on, and a port for external network access from outside the cluster.
+2) kubectl delete pvc --all
 
-Now that the file is completed, I need to apply the service to the cluster in the CLI, run and provide working evidence.
+3) kubectl delete pod --all
 
-After having problems with my previous kubectl configuration, I opted for the snap install and created the cluster with kinder, which absolved the errors I was receiving when testing the cluster. I proceeded to register the kubernetes manifest with the cluster and deployed it with the docker service I created previously. This allowed me to port-forward the service for a local test with curl, which returned the expected result.
+4) kubectl delete secret --all
 
-## sit323-2025-prac5p (previous README)
+5) kubectl delete service mongodb
+
+6) kubectl delete deployment calculator-deployment
+
+7) docker build -t jsbdevdocker/calculator_microservice:latest -f ./Dockerfile ./calculator_microservice
+
+8) docker push jsbdevdocker/calculator_microservice:latest
+
+These steps ensured that the available resources and ports were fresh, allowing me to apply the deployment manifest:
+
+### Deployment Steps
+
+(first time only)
+
+1) chmod +x mongo-secret.sh
+
+2) chmod +x mongo-setup.sh
+
+(each time thereafter)
+
+3) ./mongo-secret.sh
+
+4) kubectl get secret mongodb-secret -o yaml
+	
+5) [verify credentials config]
+
+6) kubectl apply -f mongo-storage.yaml
+
+7) kubectl apply -f mongo-deployment.yaml
+
+8) kubectl get pods -l app=mongodb
+
+	[wait for ready]
+
+9) ./mongo-setup.sh
+
+10) kubectl apply -f deployment.yaml
+
+11) kubectl apply -f mongo-backup.yaml
+
+(for testing)
+
+12) kubectl port-forward svc/mongodb 27017:27017
+
+13) kubectl port-forward svc/calculator-service 3000:3000
+
+14) mongosh "mongodb://mongouser:mongopassword@localhost:27017/admin"
+
+15) db.stats()
+
+Looking specifically at the deployment, I had to ensure that secrets were configured before invoking anything that would read them in. I stored the secrets and setup instructions as shell scripts to ensure consistency. I appended the deployment and backup manifests before testing, which required port-forwarding of the server and mongodb instance. Logging in with administrative privileges, I was now in a position where I could perform a basic query to pull up its stats (screenshots in submission file).
 
 ## Getting Started
 
-- The original project cloned for the microservice is a simple Node.js REST Server
-- Simply `npm install` from the microservice root to install its dependancies
-- Don't forget to make sure the Docker daemon is running before testing the image
+Apart from the cleaning, applying, and testing steps outlined above, the Node server simply requires an `npm install` to configure the necessary packages. After installation, simply follow the steps outlined above to apply the deployment manifests and interact with the microservice.
 
-## Method
+## Conclusion
 
-- This project outlines two specific files that are required as part of the image composition, `Dockerfile` and `docker-compose.yml` (note the .yml extension, a data serialisation language for our instructions)
-- I have set up the project's microservice deps and left blank files for the Docker configuration for the initial commit
-- The next step is to push the developed branches to dev and get to work on the docker configuration
-- After completing the base working configuration for the Docker config, the next step is to document the configuration as proof of concept
-
-### Dockerfile
-
-The cloned app only requires a compatible Node.JS runtime version to install its dependancies and run the server index. Its container would require:
-
-- A runtime image
-- A specified working directory (makes for better organisation/management)
-- Runtime command
-
-### Docker Composition
-
-The Dockerfile defines the single container image, but to compose this effectively, we need to describe how it should behave in a multi-container context, i.e., how new containers should be created, destroyed, etc.
-
-- Define the calculator as its own docker service
-- Configure the working directory and port config, define basic restart policy and build type (prod)
-- Now the service can be mounted to its respective container directory and issued a run command
-
-### Summary
-
-- Cloned app
-- Established Git repo
-- Defined docker image, including app deps and runtime config
-- Defined composition behaviour in service context
-- Established Docker repo
-- Pushed code and image to corresponding repositories
-
-After completing these steps I updated the project's composition behaviour to draw on the registry image instead of the local image, clarifying that it can be pulled and deployed remotely from anywhere.
+This task presented unique challenges that required careful thought of how I was cleaning up my deployment before adjusting it. There was lengthy research required to construct the deployment manifests in accordance with my approach to troubleshooting, which may have resulted in some unnecessary configurations. Despite this, I have successfully deployed the app, made requests to its different endpoints, and logged the database collections to show that the connection is facilitated and storage persists.

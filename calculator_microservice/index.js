@@ -1,7 +1,7 @@
 import express from 'express';
 import { MongoClient } from 'mongodb';
 
-// instantiate express and port
+// Instantiate express and port
 const app = express();
 const port = 3000;
 
@@ -32,7 +32,7 @@ async function connectToDB() {
 // Connect to MongoDB when the app starts
 connectToDB().catch(console.error);
 
-// middleware to parse JSON request bodies
+// Middleware to parse JSON request bodies
 app.use(express.json());
 
 // Middleware to validate input for calculator operations
@@ -132,7 +132,7 @@ app.post('/divide', validate, async (req, res) => {
   }
 });
 
-// Add a history endpoint to retrieve calculations
+// A history endpoint to retrieve calculations
 app.get('/history', async (req, res) => {
   try {
     const history = await db
@@ -148,12 +148,12 @@ app.get('/history', async (req, res) => {
   }
 });
 
-// default response for invalid endpoint requests
+// Default response for invalid endpoint requests
 app.use((req, res) => {
   res.status(404).json({ message: 'Endpoint Not Found' });
 });
 
-// bind the configured Express app to the port we specified earlier
+// Bind the service to the port
 app.listen(port, () => {
   console.log(`Calculator Microservice running on port ${port}`);
 });

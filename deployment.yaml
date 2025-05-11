@@ -43,5 +43,5 @@ spec:
     - protocol: TCP
       port: 3000       # Port exposed by the service
       targetPort: 3000 # Port inside the container
-      nodePort: 30008  # Exposed NodePort (between 30000-32767)
+      nodePort: 30008
   type: NodePort       # This allows external access to the service
