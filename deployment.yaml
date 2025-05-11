@@ -15,13 +15,33 @@ spec:
       containers:
       - name: calculator
         image: jsbdevdocker/calculator_microservice:latest
-        ports:
-        - containerPort: 3000
+        imagePullPolicy: Always
         env:
         - name: NODE_ENV
-          value: "production"
-        - name: MONGO_URI
-          value: "mongodb://$(MONGO_USERNAME):$(MONGO_PASSWORD)@mongo-service:27017"
-        envFrom:
-        - secretRef:
-            name: mongo-secret
+          value: production
+        - name: MONGODB_URI
+          value: "mongodb://mongouser:mongopassword@mongodb:27017/calculator?authSource=admin"
+        ports:
+        - containerPort: 3000
+        resources:
+          limits:
+            cpu: "0.2"
+            memory: "256Mi"
+          requests:
+            cpu: "0.1"
+            memory: "128Mi"
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: calculator-service
+spec:
+  selector:
+    app: calculator
+  ports:
+    - protocol: TCP
+      port: 3000       # Port exposed by the service
+      targetPort: 3000 # Port inside the container
+      nodePort: 30008  # Exposed NodePort (between 30000-32767)
+  type: NodePort       # This allows external access to the service

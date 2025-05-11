@@ -7,14 +7,15 @@ WORKDIR /calculator_microservice
 
 # Copy package files and install dependencies
 # This provides all the necessary packages for our app
-COPY calculator_microservice/package*.json ./
+COPY package*.json ./
 RUN npm install
 
 # Copy the rest of the app files in the working directory
-COPY calculator_microservice/ ./
+COPY ./ ./
 
 # Expose the service port
 EXPOSE 3000
 
 # Start the application
-CMD ["node", "index.js"]
+CMD ["npx", "nodemon", "index.js"]
+
