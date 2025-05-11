@@ -135,10 +135,6 @@ app.post('/divide', validate, async (req, res) => {
 // Add a history endpoint to retrieve calculations
 app.get('/history', async (req, res) => {
   try {
-    if (!db) {
-      return res.status(503).json({ message: 'Database not connected' });
-    }
-
     const history = await db
       .collection('calculations')
       .find({})
