@@ -5,6 +5,11 @@ num1 and num2 args required
 */
 
 import express from 'express';
+import { MongoClient } from 'mongodb';
+
+const client = new MongoClient(process.env.MONGO_URI);
+await client.connect();
+const db = client.db('calculator');
 
 //instantiate express and port
 const app = express();
