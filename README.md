@@ -72,10 +72,6 @@ These steps ensured that the available resources and ports were fresh, allowing 
 
 Looking specifically at the deployment, I had to ensure that secrets were configured before invoking anything that would read them in. I stored the secrets and setup instructions as shell scripts to ensure consistency. I appended the deployment and backup manifests before testing, which required port-forwarding of the server and mongodb instance. Logging in with administrative privileges, I was now in a position where I could perform a basic query to pull up its stats (screenshots in submission file).
 
-## Getting Started
-
-Apart from the cleaning, applying, and testing steps outlined above, the Node server simply requires an `npm install` to configure the necessary packages. After installation, simply follow the steps outlined above to apply the deployment manifests and interact with the microservice.
-
 ## Conclusion
 
 This task presented unique challenges that required careful thought of how I was cleaning up my deployment before adjusting it. There was lengthy research required to construct the deployment manifests in accordance with my approach to troubleshooting, which may have resulted in some unnecessary configurations. Despite this, I have successfully deployed the app, made requests to its different endpoints, and logged the database collections to show that the connection is facilitated and storage persists.
