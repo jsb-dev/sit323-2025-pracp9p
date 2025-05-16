@@ -1,6 +1,4 @@
-#!/bin/bash
-
-# Load environment variables from Kubernetes secrets
+# Read in values and decode them
 MONGO_USERNAME=$(kubectl get secret mongodb-secret -o jsonpath='{.data.MONGO_INITDB_ROOT_USERNAME}' | base64 --decode)
 MONGO_PASSWORD=$(kubectl get secret mongodb-secret -o jsonpath='{.data.MONGO_INITDB_ROOT_PASSWORD}' | base64 --decode)
 MONGO_DATABASE=$(kubectl get secret mongodb-secret -o jsonpath='{.data.MONGO_INITDB_DATABASE}' | base64 --decode)
@@ -10,12 +8,13 @@ MONGO_USERNAME=${MONGO_USERNAME:-"mongouser"}
 MONGO_PASSWORD=${MONGO_PASSWORD:-"mongopassword"}
 MONGO_DATABASE=${MONGO_DATABASE:-"defaultdb"}
 
+# Log Credentials for reference
 echo "MongoDB credentials:"
 echo "Username: $MONGO_USERNAME"
 echo "Password: $MONGO_PASSWORD"
 echo "Database: $MONGO_DATABASE"
 
-# Wait for MongoDB to start
+# Wait for MongoDB to start, gives pods a chance to spin up if they haven't already
 echo "Waiting for MongoDB to start..."
 sleep 10
 
