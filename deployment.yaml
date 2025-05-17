@@ -16,6 +16,7 @@ spec:
       - name: calculator
         image: jsbdevdocker/calculator_microservice:latest
         imagePullPolicy: Always
+        # I moved the connection string to secrets in the next submission for GCP, I forgot I left it hardcoded
         env:
         - name: NODE_ENV
           value: production
