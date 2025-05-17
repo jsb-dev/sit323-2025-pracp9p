@@ -1,3 +1,6 @@
+# This implementation was explicit with its storage mount path, which I ended up removing 
+# for the 10.1P submission to allow GCP autopilot's default configuration, as part of streamlining
+# the deployment's persistent volume configuration
 apiVersion: v1
 kind: PersistentVolume
 metadata:
