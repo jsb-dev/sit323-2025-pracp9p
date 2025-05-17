@@ -39,6 +39,7 @@ metadata:
 spec:
   selector:
     app: calculator
+# I opted for NodePort when developing locally, this is changed to LoadBalancer for GCP deployment
   ports:
     - protocol: TCP
       port: 3000       # Port exposed by the service
