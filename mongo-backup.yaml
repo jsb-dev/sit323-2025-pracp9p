@@ -1,9 +1,11 @@
+# This implementation was streamlined in the next submission to move this backup pvc
+# to mongo-storage, which also implements standard storage for dynamic provisioning with GCP
 apiVersion: batch/v1
 kind: CronJob
 metadata:
   name: mongodb-backup
 spec:
-  schedule: "0 2 * * *" # Runs every day at 2 AM
+  schedule: "0 2 * * *" # 2AM runtime
   jobTemplate:
     spec:
       template:
